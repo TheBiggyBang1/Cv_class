@@ -1,0 +1,9 @@
+# CV et résultats : données personnelles, jamais dans le dépôt
+cvs/
+*.pdf
+*.docx
+resultats*.csv
+
+.env
+__pycache__/
+.venv/
