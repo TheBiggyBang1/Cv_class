@@ -25,6 +25,12 @@ uvicorn app:app --reload
 
 Ouvrir http://localhost:8000, déposer les CV : ils se rangent dans la pile GO ou NO GO, avec le détail par critère et un export CSV. Les fichiers envoyés sont supprimés dès l'analyse terminée.
 
+## Déploiement sur Render
+
+Le fichier `render.yaml` décrit le service. Sur Render : **New > Blueprint**, choisir ce dépôt, puis saisir `ANTHROPIC_API_KEY` et `APP_PASSWORD` quand ils sont demandés.
+
+`APP_PASSWORD` protège l'interface : sans lui, toute personne ayant l'adresse pourrait utiliser la clé API.
+
 ## Ligne de commande
 
 ```bash
@@ -37,6 +43,7 @@ Formats lus : `.pdf`, `.docx`, `.txt`. Sortie : un CSV (ouvrable dans Excel) tri
 
 - `ANTHROPIC_API_KEY` : clé API (obligatoire).
 - `CV_MODEL` : modèle utilisé.
+- `APP_PASSWORD` : mot de passe de l'interface web (vide = pas de protection, pour le local).
 - `ECOLE_ELIMINATOIRE` : `false` par défaut (l'école est une priorité). `true` pour qu'une école hors liste donne NO GO.
 
 La liste des écoles se modifie dans `ECOLES_PRIORITAIRES`, en haut de `cv_screener.py`.
