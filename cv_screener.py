@@ -6,8 +6,8 @@ avec justification. La décision finale est prise en code : elle reste
 transparente et modifiable sans toucher au prompt.
 
 Installation :
-    pip install anthropic python-docx
-    export ANTHROPIC_API_KEY=sk-ant-...
+    pip install -r requirements.txt
+    cp .env.example .env        # puis renseigner ANTHROPIC_API_KEY
 
 Usage :
     python cv_screener.py ./cvs                  # dossier de .pdf / .docx / .txt
@@ -23,9 +23,12 @@ import sys
 from pathlib import Path
 
 import anthropic
+from dotenv import load_dotenv
+
+load_dotenv()  # lit le fichier .env s'il existe
 
 # --------------------------------------------------------------------------
-# Configuration - à ajuster
+# Configuration - à ajuster ici ou dans .env
 # --------------------------------------------------------------------------
 MODEL = os.getenv("CV_MODEL", "claude-sonnet-5-5")
 
@@ -38,7 +41,7 @@ ECOLES_PRIORITAIRES = {
 
 # False : l'école est une priorité (les GO d'écoles prioritaires sortent en tête).
 # True  : hors TBS / ENIT / IHEC = NO GO.
-ECOLE_ELIMINATOIRE = False
+ECOLE_ELIMINATOIRE = os.getenv("ECOLE_ELIMINATOIRE", "false").lower() in {"1", "true", "oui"}
 
 NIVEAUX = ["professionnel", "intermediaire", "debutant", "non_mentionne"]
 

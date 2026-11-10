@@ -1,2 +1,6 @@
 anthropic
 python-docx
+python-dotenv
+fastapi
+uvicorn
+python-multipart

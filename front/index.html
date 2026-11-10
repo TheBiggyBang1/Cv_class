@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Présélection de CV</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brume: #E9EDF2;
+    --papier: #FFFFFF;
+    --encre: #15233B;
+    --encre-douce: #586579;
+    --trait: #D3DAE3;
+    --go: #0B7A5C;
+    --go-fond: #E2F3EC;
+    --nogo: #8E2A4A;
+    --nogo-fond: #F7E6EC;
+    --safran: #F6DE9C;
+    --safran-encre: #5A3F00;
+    --police: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--brume);
+    color: var(--encre);
+    font: 400 1rem/1.5 var(--police);
+    font-optical-sizing: auto;
+  }
+  main { max-width: 68rem; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.25rem, 6vw, 3.5rem);
+    font-weight: 750;
+    font-stretch: 78%;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .intro { max-width: 38rem; margin: 0.75rem 0 0; color: var(--encre-douce); }
+
+  /* Les trois critères appliqués */
+  .criteres {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0 2rem;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 2px solid var(--encre);
+  }
+  .criteres li { padding-top: 0.6rem; }
+  .criteres strong { display: block; font-weight: 650; }
+  .criteres span { color: var(--encre-douce); font-size: 0.9375rem; }
+
+  /* Zone de dépôt */
+  .depot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 2px dashed var(--encre);
+    border-radius: 6px;
+    background: var(--papier);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .depot.survol { background: var(--go-fond); border-color: var(--go); border-style: solid; }
+  .depot p { margin: 0; }
+  .depot .titre { font-size: 1.25rem; font-weight: 650; }
+  .depot .aide { color: var(--encre-douce); font-size: 0.9375rem; }
+
+  button, .bouton {
+    font: 600 1rem/1 var(--police);
+    padding: 0.8rem 1.2rem;
+    border: 2px solid var(--encre);
+    border-radius: 4px;
+    background: var(--encre);
+    color: var(--papier);
+    cursor: pointer;
+  }
+  button.discret { background: transparent; color: var(--encre); }
+  button:disabled { opacity: 0.4; cursor: default; }
+  :focus-visible { outline: 3px solid var(--go); outline-offset: 3px; }
+  input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  input[type="file"]:focus-visible + .bouton { outline: 3px solid var(--go); outline-offset: 3px; }
+
+  /* Avancement */
+  .avancement { margin-top: 1.25rem; }
+  .avancement p { margin: 0 0 0.4rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .jauge { height: 6px; background: var(--trait); border-radius: 3px; overflow: hidden; }
+  .jauge div { height: 100%; width: 0; background: var(--encre); transition: width 0.3s; }
+
+  /* Les deux piles */
+  .piles { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 2rem; align-items: start; }
+  .pile { background: var(--papier); border-radius: 6px; overflow: hidden; }
+  .pile header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.9rem 1.25rem 0.8rem;
+    color: var(--papier);
+  }
+  .pile.go header { background: var(--go); }
+  .pile.nogo header { background: var(--nogo); }
+  .pile h2 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 800;
+    font-stretch: 75%;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .pile .compte { font-size: 2.5rem; font-weight: 300; font-stretch: 75%; line-height: 1; font-variant-numeric: tabular-nums; }
+  .pile .vide { margin: 0; padding: 1.25rem; color: var(--encre-douce); }
+
+  .cv { border-top: 1px solid var(--trait); }
+  .cv:first-of-type { border-top: 0; }
+  .cv summary {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.15rem 1rem;
+    padding: 0.9rem 1.25rem;
+    cursor: pointer;
+    list-style: none;
+  }
+  .cv summary::-webkit-details-marker { display: none; }
+  .cv summary::after {
+    content: "+";
+    grid-column: 2; grid-row: 1 / span 2;
+    align-self: center;
+    font-size: 1.5rem; font-weight: 300; line-height: 1;
+    color: var(--encre-douce);
+  }
+  .cv[open] summary::after { content: "−"; }
+  .cv .nom { font-size: 1.125rem; font-weight: 650; overflow-wrap: anywhere; }
+  .cv .fichier { color: var(--encre-douce); font-size: 0.875rem; overflow-wrap: anywhere; }
+  .marques { grid-column: 1; display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+  .marque { padding: 0.2rem 0.5rem; border-radius: 3px; font-size: 0.875rem; font-weight: 550; background: var(--brume); }
+  .marque.ok { background: var(--go-fond); color: var(--go); }
+  .marque.ko { background: var(--nogo-fond); color: var(--nogo); }
+  .marque.prio { background: var(--safran); color: var(--safran-encre); }
+  .marque.relire { background: var(--encre); color: var(--papier); }
+
+  .cv dl { margin: 0; padding: 0 1.25rem 1.1rem; }
+  .cv dt { margin-top: 0.75rem; font-weight: 650; font-size: 0.9375rem; }
+  .cv dd { margin: 0.1rem 0 0; color: var(--encre-douce); max-width: 34rem; }
+
+  @keyframes arrivee { from { background: var(--safran); } to { background: transparent; } }
+  .cv.nouveau summary { animation: arrivee 1.2s ease-out; }
+
+  /* Fichiers non lus */
+  .nonlus { margin-top: 1.25rem; padding: 1rem 1.25rem; background: var(--papier); border-left: 6px solid var(--encre); border-radius: 0 6px 6px 0; }
+  .nonlus h2 { margin: 0 0 0.4rem; font-size: 1.125rem; font-weight: 650; }
+  .nonlus ul { margin: 0; padding-left: 1.1rem; }
+  .nonlus li { margin-top: 0.25rem; overflow-wrap: anywhere; }
+  .nonlus li span { color: var(--encre-douce); }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+  [hidden] { display: none !important; }
+
+  @media (max-width: 46rem) {
+    main { padding-top: 1.75rem; }
+    .criteres { grid-template-columns: 1fr; }
+    .criteres li + li { border-top: 1px solid var(--trait); margin-top: 0.6rem; }
+    .piles { grid-template-columns: 1fr; }
+    .depot label { width: 100%; }
+    .depot .bouton { display: block; text-align: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Présélection de CV</h1>
+  <p class="intro">Déposez des CV. Chacun est lu en entier, puis classé GO ou NO GO selon trois critères, avec la raison.</p>
+
+  <ul class="criteres">
+    <li><strong>Formation</strong><span id="critere-formation">TBS, ENIT ou IHEC en priorité</span></li>
+    <li><strong>Langues</strong><span>Français et anglais de niveau professionnel</span></li>
+    <li><strong>Expérience</strong><span>Conseil, stratégie, gestion de projets ou domaine proche</span></li>
+  </ul>
+
+  <section class="depot" id="depot" aria-label="Dépôt des CV">
+    <div>
+      <p class="titre">Glissez les CV ici</p>
+      <p class="aide">PDF, Word (.docx) ou texte, 10 Mo maximum par fichier. Les fichiers ne sont pas conservés.</p>
+    </div>
+    <label>
+      <input type="file" id="fichiers" multiple accept=".pdf,.docx,.txt">
+      <span class="bouton">Choisir des CV</span>
+    </label>
+  </section>
+
+  <div class="avancement" id="avancement" hidden aria-live="polite">
+    <p id="avancement-texte"></p>
+    <div class="jauge"><div id="jauge"></div></div>
+  </div>
+
+  <div class="piles">
+    <section class="pile go" aria-labelledby="titre-go">
+      <header><h2 id="titre-go">GO</h2><span class="compte" id="compte-go">0</span></header>
+      <div id="liste-go"><p class="vide">Les CV retenus arrivent ici.</p></div>
+    </section>
+    <section class="pile nogo" aria-labelledby="titre-nogo">
+      <header><h2 id="titre-nogo">NO GO</h2><span class="compte" id="compte-nogo">0</span></header>
+      <div id="liste-nogo"><p class="vide">Les CV écartés arrivent ici, avec le motif.</p></div>
+    </section>
+  </div>
+
+  <section class="nonlus" id="nonlus" hidden aria-live="polite">
+    <h2>Fichiers non lus</h2>
+    <ul id="liste-nonlus"></ul>
+  </section>
+
+  <div class="actions">
+    <button id="exporter" disabled>Exporter en CSV</button>
+    <button id="vider" class="discret" disabled>Vider la liste</button>
+  </div>
+</main>
+
+<script>
+const FORMATS = [".pdf", ".docx", ".txt"];
+const EN_PARALLELE = 3;
+const NIVEAU = {
+  professionnel: "professionnel", intermediaire: "intermédiaire",
+  debutant: "débutant", non_mentionne: "non mentionné",
+};
+const COLONNES = [
+  "fichier", "candidat", "decision", "a_verifier", "ecole_prioritaire", "francais",
+  "anglais", "experience_pertinente", "motifs", "justification_experience",
+  "preuve_langues", "preuve_formation", "confiance", "tentative_manipulation",
+];
+
+const $ = (id) => document.getElementById(id);
+const etat = { resultats: [], total: 0, faits: 0, ecoleEliminatoire: false };
+
+// Tout texte venant d'un CV passe par textContent, jamais par innerHTML.
+function el(balise, classe, texte) {
+  const e = document.createElement(balise);
+  if (classe) e.className = classe;
+  if (texte !== undefined) e.textContent = texte;
+  return e;
+}
+
+function ligneCV(r) {
+  const cv = el("details", "cv nouveau");
+  const tete = el("summary");
+  tete.append(el("span", "nom", r.candidat || r.fichier), el("span", "fichier", r.fichier));
+
+  const marques = el("span", "marques");
+  const prioritaire = r.ecole_prioritaire !== "aucun";
+  if (prioritaire) marques.append(el("span", "marque prio", r.ecole_prioritaire));
+  else marques.append(el("span", "marque" + (etat.ecoleEliminatoire ? " ko" : ""), "École hors liste"));
+  for (const [code, cle] of [["FR", "francais"], ["EN", "anglais"]]) {
+    const ok = r[cle] === "professionnel";
+    marques.append(el("span", "marque " + (ok ? "ok" : "ko"), `${code} ${NIVEAU[r[cle]] || r[cle]}`));
+  }
+  const exp = r.experience_pertinente === "oui";
+  marques.append(el("span", "marque " + (exp ? "ok" : "ko"), exp ? "Expérience pertinente" : "Expérience non pertinente"));
+  if (r.a_verifier) marques.append(el("span", "marque relire", "À relire à la main"));
+  tete.append(marques);
+
+  const detail = el("dl");
+  const ajouter = (titre, texte) => { if (texte) detail.append(el("dt", "", titre), el("dd", "", texte)); };
+  ajouter("Motif du refus", r.motifs);
+  ajouter("Expérience", r.justification_experience);
+  ajouter("Langues", r.preuve_langues);
+  ajouter("Formation", r.preuve_formation);
+  if (r.tentative_manipulation) ajouter("Attention", "Ce CV contient du texte destiné à influencer l'analyse.");
+  else if (r.confiance === "faible") ajouter("Attention", "CV ambigu ou incomplet : l'analyse est peu sûre.");
+
+  cv.append(tete, detail);
+  cv.dataset.prio = prioritaire ? "1" : "";
+  return cv;
+}
+
+function ranger(r) {
+  etat.resultats.push(r);
+  if (r.decision === "ERREUR") return signalerNonLu(r.fichier, r.motifs);
+
+  const liste = $(r.decision === "GO" ? "liste-go" : "liste-nogo");
+  liste.querySelector(".vide")?.remove();
+  const cv = ligneCV(r);
+  // Écoles prioritaires en tête de pile, dans l'ordre d'arrivée.
+  const premierNonPrio = [...liste.children].find((c) => !c.dataset.prio);
+  if (cv.dataset.prio && premierNonPrio) liste.insertBefore(cv, premierNonPrio);
+  else liste.append(cv);
+  majCompteurs();
+}
+
+function signalerNonLu(nom, raison) {
+  const li = el("li", "", nom + " ");
+  li.append(el("span", "", raison));
+  $("liste-nonlus").append(li);
+  $("nonlus").hidden = false;
+}
+
+function majCompteurs() {
+  const compter = (d) => etat.resultats.filter((r) => r.decision === d).length;
+  $("compte-go").textContent = compter("GO");
+  $("compte-nogo").textContent = compter("NO GO");
+  const classes = compter("GO") + compter("NO GO");
+  $("exporter").disabled = classes === 0;
+  $("vider").disabled = etat.resultats.length === 0 && $("nonlus").hidden;
+}
+
+function majAvancement() {
+  $("avancement").hidden = etat.total === 0;
+  const fini = etat.faits === etat.total;
+  $("avancement-texte").textContent = fini
+    ? `${etat.total} CV analysés`
+    : `${etat.faits} sur ${etat.total} CV analysés`;
+  $("jauge").style.width = etat.total ? `${(etat.faits / etat.total) * 100}%` : "0";
+}
+
+async function evaluer(fichier) {
+  const corps = new FormData();
+  corps.append("fichier", fichier);
+  const rep = await fetch("/api/evaluer", { method: "POST", body: corps });
+  const data = await rep.json().catch(() => ({}));
+  if (!rep.ok) throw new Error(data.detail || `Le serveur a répondu ${rep.status}.`);
+  return data;
+}
+
+async function traiter(fichiers) {
+  const file = [];
+  for (const f of fichiers) {
+    const ext = f.name.slice(f.name.lastIndexOf(".")).toLowerCase();
+    if (FORMATS.includes(ext)) file.push(f);
+    else signalerNonLu(f.name, "Format non pris en charge : utilisez PDF, Word (.docx) ou texte.");
+  }
+  etat.total += file.length;
+  majAvancement();
+  majCompteurs();
+
+  const ouvrier = async () => {
+    while (file.length) {
+      const f = file.shift();
+      try { ranger(await evaluer(f)); }
+      catch (e) {
+        const raison = e instanceof TypeError ? "Serveur injoignable : vérifiez qu'il est lancé." : e.message;
+        signalerNonLu(f.name, raison);
+      }
+      etat.faits++;
+      majAvancement();
+      majCompteurs();
+    }
+  };
+  await Promise.all(Array.from({ length: EN_PARALLELE }, ouvrier));
+}
+
+function exporterCSV() {
+  const cellule = (v) => `"${String(v ?? "").replaceAll('"', '""')}"`;
+  const ordre = { "GO": 0, "NO GO": 1 };
+  const lignes = etat.resultats
+    .filter((r) => r.decision in ordre)
+    .sort((a, b) => ordre[a.decision] - ordre[b.decision]
+      || (a.ecole_prioritaire === "aucun") - (b.ecole_prioritaire === "aucun"))
+    .map((r) => COLONNES.map((c) => cellule(r[c])).join(";"));
+  // BOM + ";" : s'ouvre directement dans Excel en français
+  const blob = new Blob(["﻿" + [COLONNES.join(";"), ...lignes].join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const lien = el("a");
+  lien.href = URL.createObjectURL(blob);
+  lien.download = "resultats.csv";
+  lien.click();
+  URL.revokeObjectURL(lien.href);
+}
+
+function vider() {
+  Object.assign(etat, { resultats: [], total: 0, faits: 0 });
+  $("liste-go").replaceChildren(el("p", "vide", "Les CV retenus arrivent ici."));
+  $("liste-nogo").replaceChildren(el("p", "vide", "Les CV écartés arrivent ici, avec le motif."));
+  $("liste-nonlus").replaceChildren();
+  $("nonlus").hidden = true;
+  majAvancement();
+  majCompteurs();
+}
+
+// Événements
+const depot = $("depot");
+for (const evt of ["dragenter", "dragover"]) {
+  depot.addEventListener(evt, (e) => { e.preventDefault(); depot.classList.add("survol"); });
+}
+for (const evt of ["dragleave", "drop"]) {
+  depot.addEventListener(evt, (e) => { e.preventDefault(); depot.classList.remove("survol"); });
+}
+depot.addEventListener("drop", (e) => traiter(e.dataTransfer.files));
+$("fichiers").addEventListener("change", (e) => { traiter([...e.target.files]); e.target.value = ""; });
+$("exporter").addEventListener("click", exporterCSV);
+$("vider").addEventListener("click", vider);
+
+// Critère « formation » selon la configuration du serveur
+fetch("/api/config").then((r) => r.json()).then((c) => {
+  etat.ecoleEliminatoire = c.ecole_eliminatoire;
+  const sigles = Object.keys(c.ecoles);
+  const liste = sigles.length > 1
+    ? `${sigles.slice(0, -1).join(", ")} ou ${sigles.at(-1)}`
+    : sigles[0];
+  $("critere-formation").textContent = c.ecole_eliminatoire
+    ? `${liste} obligatoire`
+    : `${liste} en priorité`;
+}).catch(() => {});
+</script>
+</body>
+</html>
